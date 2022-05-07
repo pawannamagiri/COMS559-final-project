@@ -28,11 +28,11 @@ public class AuthTokenBean {
     }
 
     public String getToken2() {
-        return token1;
+        return token2;
     }
 
-    public void setToken2(String token1) {
-        this.token1 = token1;
+    public void setToken2(String token2) {
+        this.token2 = token2;
     }
 
     public String getUsername() {
