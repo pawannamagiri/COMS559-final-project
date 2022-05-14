@@ -6,6 +6,7 @@ import { useCookies } from 'react-cookie';
 import { BrowserRouter as Router, Route, Routes, useNavigate} from "react-router-dom";
 import Dashboard from './dashboard';
 import { Link } from 'react-router-dom';
+
   
 const Login = () => {
     const axios = require('axios');
@@ -53,8 +54,20 @@ const Login = () => {
         console.log(error);
       });
 
+      setIsLoggedin(true);
+
         
     }
+    const logout = () => {
+      localStorage.removeItem('token-info');
+      setIsLoggedin(false);
+      setCookie('token1', "");
+      setCookie('token2', "");
+      setCookie('username', "");
+
+
+      
+    };
 
     
   
@@ -69,8 +82,12 @@ const Login = () => {
     const [secretKey, setSecretKey] = useState('');
     const [cookies, setCookie] = useCookies(['user']);
     const [authenticated, setAuthenticated] = useState(false);
+    const [isLoggedin, setIsLoggedin] = useState(false);
+    console.log(isLoggedin);
   
     return(
+      <div> 
+     
       <div className="main-wrapper center border-grey">
         <h1>AWS Login</h1>
         <form id="main-login-form" onSubmit={handleSubmission}>
@@ -84,8 +101,17 @@ const Login = () => {
             Validate
           </Button>
         </form>
+
     </div>
-  );
+    
+      
+      
+      
+      </div>
+    );
+  
+  
+  
 };
   
 export default Login;

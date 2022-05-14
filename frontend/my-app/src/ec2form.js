@@ -2,14 +2,15 @@ import React from "react";
 import axios from "axios";
 import Container from "@mui/material/Container";
 import { useCookies } from "react-cookie";
+import Card from 'react-bootstrap/Card';
+import ListGroup from 'react-bootstrap/ListGroup';
+import Button from '@mui/material/Button';
+import { styled } from '@mui/material/styles';
+
+
 
 const Ec2Form = () => {
-  //   const [formValue, setFormValue] = React.useState({
-  //     AmiId: 'aa',
-  //     InstanceType: '',
-  //     SecurityGroup: '',
-  //     KeyPair: ''
-  //   });
+
 
   const [instanceType, setInstanceType] = React.useState("");
   const [amiId, setAmiId] = React.useState("");
@@ -17,6 +18,7 @@ const Ec2Form = () => {
   const [keyPair, setKeyPair] = React.useState("");
 
   const [cookies, setCookie] = useCookies(["user"]);
+  const [instanceList, setInstanceList] = React.useState("");
 
   const handleAmiChange = (e) => {
     setAmiId(e.target.value);
@@ -24,25 +26,52 @@ const Ec2Form = () => {
 
   let json = {
 
-    'token1' : cookies.token1,
-    'token2' : cookies.token2,
+    'token1': cookies.token1,
+    'token2': cookies.token2,
     "imageId": amiId,
     "instanceType": instanceType,
     "securityGroup": securityGroup,
     "keyPairName": keyPair,
   };
   const handleSubmit = (event) => {
-    // we will fill this in the coming paragraph
     event.preventDefault();
 
-    console.log(json);
     let url = "http://localhost:8080/home/ec2/createInstance";
-    axios.post(url, json).then((res) => {
-      // then print response status
-      console.warn(res);
-    });
+    axios.post(url, json).then(function (response) {
+
+      alert('Instance Created..!');
+      console.log(response.data);
+
+    })
+      .catch(function (error) {
+
+        alert('Instance not created. Check your configuration.');
+        console.log(error.trace);
+      });
+  }
+
+
+
+
+
+
+  const onLoading = (event) => {
+    axios
+      .post("http://localhost:8080/home/ec2/listInstances", json)
+      .then(function (response) {
+        console.log(response);
+        setInstanceList(response.data);
+      });
   };
-  
+  const logout = () => {
+    localStorage.removeItem('token-info');
+    setCookie('token1', "");
+    setCookie('token2', "");
+    setCookie('username', "");
+    window.location.href = "/login";
+
+  };
+
 
   const mystyle = {
     color: "blue",
@@ -58,22 +87,31 @@ const Ec2Form = () => {
     padding: "50px",
     align: "center",
   };
+  let NameOfUser = cookies.username;
+
+  const Div = styled('div')(({ theme }) => ({
+    ...theme.typography.button,
+    backgroundColor: theme.palette.background.paper,
+    padding: theme.spacing(1),
+  }));
   return (
     <React.Fragment>
+
       <Container maxWidth="false">
+
         <div style={mystyle}>
+          <Div>  Welcome {NameOfUser}! </Div>
+
           <form onSubmit={handleSubmit}>
             <div style={{ color: "blue", padding: 10 }}>
               <div style={{ paddingLeft: 250 }}>
-                <p>EC2 Form</p>
+                <p style={{ align: "center", color: "blue" }}>EC2 Form</p>
               </div>
               <label>
                 {" "}
                 Enter AMI ID:
                 <input
                   type="text"
-                  name="email"
-                  // placeholder="Enter Ami Id"
                   value={amiId}
                   onChange={(e) => setAmiId(e.target.value)}
                 />
@@ -85,8 +123,6 @@ const Ec2Form = () => {
                 Enter Instance Type:
                 <input
                   type="text"
-                  //name="password"
-                  //placeholder="Enter Instance Type"
                   value={instanceType}
                   onChange={(e) => setInstanceType(e.target.value)}
                 />
@@ -98,8 +134,6 @@ const Ec2Form = () => {
                 Security Group:
                 <input
                   type="text"
-                  //name="password"
-                  //placeholder="Security Group"
                   value={securityGroup}
                   onChange={(e) => setSecurityGroup(e.target.value)}
                 />
@@ -111,19 +145,33 @@ const Ec2Form = () => {
                 Key Pair:
                 <input
                   type="text"
-                  name="password"
-                  // placeholder="Security Group"
                   value={keyPair}
                   onChange={(e) => setKeyPair(e.target.value)}
                 />
               </label>
             </div>
             <div>
-              <button type="submit">submit</button>
+              <Button variant="contained" size="small" type="submit">submit</Button>
             </div>
           </form>
+          <p></p>
+          <Button variant="contained" color="error" size="small" onClickCapture={logout}>logout user</Button>
+
         </div>
+
       </Container>
+      <p > </p>
+      <Card style={mystyle}>
+        <ListGroup variant="flush">
+          <div style={{ align: "center !important", paddingLeft: " 200p !important" }}>
+            <Button variant="contained" size="small" style={{ align: "center" }} onClick={onLoading}> Show Available Instances </Button>
+            <div dangerouslySetInnerHTML={{ __html: instanceList }} />
+          </div>
+
+
+        </ListGroup>
+      </Card>
+
     </React.Fragment>
   );
 };

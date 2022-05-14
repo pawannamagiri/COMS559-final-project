@@ -5,6 +5,7 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  padding:50px;
 }
 
 code {
@@ -29,4 +30,9 @@ code {
 
 .input-field-wrapper {
   padding: 20px;
+}
+
+
+#login-link, #dash-link {
+  padding: 10px;
 }
